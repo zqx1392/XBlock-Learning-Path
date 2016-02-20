@@ -165,5 +165,7 @@
 	-moz-border-left-colors: none;
 	-moz-border-right-colors: none;
 	-moz-border-top-colors: none;
-
+}
+.hidden {
+    display: none;
 }
