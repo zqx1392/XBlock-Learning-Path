@@ -1,3 +1,10 @@
+TODO
+1. edit js to search for problem set number via question name ($(this).parent().parent().attr('id');)
+2. show correct or wrong mark
+3. disabled answered question
+4. show hidden question
+bonus: make answer border green or red and add correct or wrong mark
+
 This static directory is for files that should be included in your kit as plain
 static files.
 
