@@ -1,9 +1,9 @@
 """TO-DO: Write a description of what this XBlock is."""
 
 import pkg_resources
-
+from django.template import Template, Context
 from xblock.core import XBlock
-from xblock.fields import Scope, Integer
+from xblock.fields import Scope, String, Dict, List, Boolean, Integer
 from xblock.fragment import Fragment
 
 
@@ -35,20 +35,41 @@ class MyXBlock(XBlock):
     """
     # Fields are defined on the class.  You can access them in your code as
     # self.<fieldname>.
-    
+    """
     # FOR BASE XBLOCK
     class_unit #to be used for node in learning path
     is_pre_tested #check if student get pre-test
     is_post_tested # check if student get post-test
     is_pre_pass # check if student pass pre test
     is_post_pass # check if student pass post test
-
+    private_results = Boolean(default=False, help="Whether or not to display results to the user.")
+    """
     # FOR QUESTION XBLOCK
-    question
-    answer_list
-    correct_answer
-    learning_object_link # to link to specific learning object in case student answer wrong
-    child_question # if student answer wrong, provide specific child question for student to answer next.
+    questions = List(
+        default=[
+            (('1', {'0': 'How old are you', '1': 'How young are you','2': 'How fat are you', '3': 'How small are you' },
+	      {'0': ['10','11','12','13'],'1': ['5','4','2','3'],'2': ['50','51','52','53'],'3': ['120','130','140','150']}
+	    )),
+            (('2',{'0': 'Do you know math', '1': 'Do you know algrebra','2': 'Do you know English', '3': 'Do you know human language'},
+	     {'0': ['yes','maybe','no','why?'],'1': ['yes','maybe','no','why?'],'2': ['yes','maybe','no','why?'],'3':['yes','maybe','no','why?']}
+	    )),
+            (('3',{'0': 'Can you calculate', '1': 'Can you Multiple','2': 'Can you subtract', '3': 'Can you count' },
+	     {'0': ['yes','Of course','What','why?'],'1': ['yes','maybe','no','why?'],'2': ['yes','maybe','no','why?'],'3':['yes','maybe','no','why?']}
+	    ))
+        ],
+        scope=Scope.settings, help="Questions and Answers list for each test"
+    )
+    answers = List(
+	default=[
+		['13','2','51','140'],
+		['yes','yes','yes','yes'],
+		['What','yes','yes','yes']
+	],
+	scope=Scope.user_state, help="Correct answers for the questions"
+    )
+    choice = String(scope=Scope.settings, help="The student's answer")
+    learning_object_url = String(help="Url of the learning object you want the student to learn", scope=Scope.content)
+    # child_question, if student answer wrong, provide specific child question for student to answer next.
     """
      END OF FIELD SECTION.
     """
@@ -67,9 +88,15 @@ class MyXBlock(XBlock):
         The primary view of the MyXBlock, shown to students
         when viewing courses.
         """
-	# LOAD HTML
-        html = self.resource_string("static/html/myxblock.html")
-        frag = Fragment(html.format(self=self))
+	if not context:
+            context = {}
+
+	context.update({
+            'questions': self.questions
+        })
+	html = Template(
+            self.resource_string("static/html/myxblock.html")).render(Context(context))
+        frag = Fragment(html)
 	# LOAD CSS
         frag.add_css(self.resource_string("static/css/myxblock.css"))
 	# LOAD JS
@@ -77,6 +104,8 @@ class MyXBlock(XBlock):
 	# CREATE XBLOCK
         frag.initialize_js('MyXBlock')
         return frag
+	
+
     """
     END OF STUDENT VIEW SECTION
     """
@@ -85,23 +114,26 @@ class MyXBlock(XBlock):
     """
     SELF-DEFINED FUNCTION, FOR AJAX OR ANY
     """
-    # TO-DO: change this handler to perform your own actions.  You may need more
-    # than one handler, or you may not need any handlers at all.
-    @XBlock.json_handler
-    def increment_count(self, data, suffix=''):
-        """
-        An example handler, which increments the data.
-        """
-        # Just to show data coming in...
-        assert data['hello'] == 'world'
-
-        self.count += 1
-        return {"count": self.count}
     
     # CHECK ANSWER FROM XBLOCK'S DATABASE AND RETURN THE RESULT
     @XBlock.json_handler
     def get_answer(self, data, suffix=''):
-        return null
+        
+	result = {}
+        for question,answer in data.items():
+	    for key1 in range(0,len(self.questions)):	        		        
+		for key2 in range(0,4):
+                    temp = str(key2);
+		    if self.questions[key1][1][temp] == question:
+		        if self.answers[key1][key2] == answer:
+			    result[question] = 'true'
+	
+                        else:
+			    result[question] = 'false'
+			break
+	return {
+            'Results': result
+        }
 
     """
     END OF SELF-DEFINED FUNCTION
