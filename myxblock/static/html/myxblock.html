@@ -1,23 +1,86 @@
+<!-- TODO
+     1. Disable Element
+     2. send answer and report correct
+     3. enable specific question  -->
+
 <div class="myxblock_block">
-<p>Which piece of furniture is built for sitting?</p>
+{% for number,question,answers in questions%}
+<div {% if number != '1' %}class="hidden" {% endif %} id ='question-{{number}}1s0'>
 <span>
+
 <form class="choicegroup" >
     <fieldset  >
-        <label>
-            <input name="Q1" value="choice_0" type="radio"> a table
-        </label>
-	<label>
-            <input name="Q1" value="choice_1" type="radio"> a desk
-        </label>
-	<label>
-            <input name="Q1" value="choice_2" type="radio"> a chair
-        </label>
-	<label>
-            <input name="Q1" value="choice_3" type="radio"> a cactus
-        </label>
-        <span id="answer_i4x-edX-DemoX-problem-a0effb954cca4759994f1ac9e9434bf4_3_1"></span>
+	<p>{% if number == '1' %}{{number}}. {% endif %}{{question.0}}</p>
+		{% for answer in answers.0 %}
+			<label>
+			    <input name="{{question.0}}" value="{{answer}}" type="radio">  {{answer}}
+			</label>
+		{% endfor %}
+		
+        <button class="check" data-checking="Checking..." data-value="Check"><span class="check-label">Check</span><!--<span class="sr"> your answer</span>--></button>
+    </fieldset>
+    
+</form>
+
+</span>
+</div>
+
+<div class="hidden" id ='question-{{number}}s1'>
+
+<span>
+
+<form class="choicegroup" >
+    <fieldset  >
+	<p>{{question.1}}</p>
+		{% for answer in answers.1 %}
+			<label>
+			    <input name="{{question.1}}" value="{{answer}}" type="radio">  {{answer}}
+			</label>
+		{% endfor %}
+		
+        
     </fieldset>
 </form>
 </span>
-<button class="check Check" data-checking="Checking..." data-value="Check"><span class="check-label">Check</span><!--<span class="sr"> your answer</span>--></button>
+</div>
+
+<div class="hidden" id ='question-{{number}}s2'>
+
+<span>
+
+<form class="choicegroup" >
+    <fieldset  >
+	<p>{{question.2}}</p>
+		{% for answer in answers.2 %}
+			<label>
+			    <input name="{{question.2}}" value="{{answer}}" type="radio">  {{answer}}
+			</label>
+		{% endfor %}
+		
+        
+    </fieldset>
+</form>
+</span>
+</div>
+
+<div class="hidden" id ='question-{{number}}s3'>
+
+<span>
+
+<form class="choicegroup" >
+    <fieldset  >
+	<p>{{question.3}}</p>
+		{% for answer in answers.3 %}
+			<label>
+			    <input name="{{question.3}}" value="{{answer}}" type="radio">  {{answer}}
+			</label>
+		{% endfor %}
+		
+        
+    </fieldset>
+</form>
+</span>
+</div>
+{% endfor %}
+
 </div>
