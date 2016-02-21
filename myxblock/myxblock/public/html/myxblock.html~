@@ -1,0 +1,95 @@
+<!-- TODO
+     1.CHILD QUESTION, new popup  
+	 1.5 Make Server record student's choice and other data properly
+     2. Do Studio View
+	 3. Create Visual Path
+-->
+
+<script>
+	//TO BE USED IN MYXBLOCK.JS, RECEIVED BY DJANGO
+	var CORRECT_ICON = "{{correct_icon}}";
+	var INCORRECT_ICON = "{{incorrect_icon}}";
+</script>
+
+<div class="myxblock_block">
+{% for number,question,answers in questions%}
+<div {% if number != '1' %}class="hidden" {% endif %} id ='question-{{number}}s0'>
+<span>
+
+<form class="choicegroup" >
+    <fieldset  >
+	<p>{% if number == '1' %}{{number}}. {% endif %}{{question.0}}</p>
+		{% for answer in answers.0 %}
+			<label>
+			    <input name="{{question.0}}" value="{{answer}}" type="radio">  {{answer}} 
+			</label>
+            
+		{% endfor %}
+		
+        <input type="button" id = "{{question.0}}" class="check" value="Check" >
+    </fieldset>
+    
+</form>
+
+</span>
+</div>
+
+<div class="hidden" id ='question-{{number}}s1'>
+
+<span>
+
+<form class="choicegroup" >
+    <fieldset  >
+	<p>{{question.1}}</p>
+		{% for answer in answers.1 %}
+			<label>
+			    <input name="{{question.1}}" value="{{answer}}" type="radio">  {{answer}}
+			</label>
+		{% endfor %}
+		
+        <input type="button" id = "{{question.1}}" class="check" value="Check" >
+    </fieldset>
+</form>
+</span>
+</div>
+
+<div class="hidden" id ='question-{{number}}s2'>
+
+<span>
+
+<form class="choicegroup" >
+    <fieldset  >
+	<p>{{question.2}}</p>
+		{% for answer in answers.2 %}
+			<label>
+			    <input name="{{question.2}}" value="{{answer}}" type="radio">  {{answer}}
+			</label>
+		{% endfor %}
+		
+        <input type="button" id = "{{question.2}}" class="check" value="Check" >
+    </fieldset>
+</form>
+</span>
+</div>
+
+<div class="hidden" id ='question-{{number}}s3'>
+
+<span>
+
+<form class="choicegroup" >
+    <fieldset  >
+	<p>{{question.3}}</p>
+		{% for answer in answers.3 %}
+			<label>
+			    <input name="{{question.3}}" value="{{answer}}" type="radio">  {{answer}}
+			</label>
+		{% endfor %}
+		
+        <input type="button" id = "{{question.3}}" class="check" value="Check" >
+    </fieldset>
+</form>
+</span>
+</div>
+{% endfor %}
+
+</div>
