@@ -80,6 +80,10 @@ function MyXBlock(runtime, element) {
 				count_correct_sub_question = 0;
 				showNextQuestion(question_number);
 			}
+			else {
+				count_correct_sub_question = 0;
+				showLOLinkPopup(question_number);
+			}
 	};
     // Show next question after a student answered a question correct.
     var showNextQuestion = function( question_number){
@@ -100,6 +104,12 @@ function MyXBlock(runtime, element) {
 		else
 			$("input[type=radio]:enabled:checked",element).parent().css("border-color", "rgb(178, 6, 16)").append("<img src=" + INCORRECT_ICON + "></img>");	
 	};
+	
+	var showLOLinkPopup = function(question_number){
+		//activate modal
+		
+	};
+	
 
  
  
