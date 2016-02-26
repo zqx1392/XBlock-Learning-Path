@@ -71,9 +71,18 @@ class MyXBlock(XBlock):
 			],
 		scope=Scope.user_state, help="Correct answers for the questions"
     	)
-	choice = String(scope=Scope.settings, help="The student's answer")
-	learning_object_url = String(help="Url of the learning object you want the student to learn", scope=Scope.content)
-	# child_question, if student answer wrong, provide specific child question for student to answer next.
+	choices = List(
+		default=[
+				['','','',''],
+				['','','',''],
+				['','','','']
+			],
+		scope=Scope.settings, help="The student's answer")
+	learning_object_url = String(
+		default=[
+				"linkA","linkB","linkC"
+			],
+		help="Url of the learning object you want the student to learn", scope=Scope.settings)
 	"""
 	 END OF FIELD SECTION.
 	"""
@@ -98,7 +107,9 @@ class MyXBlock(XBlock):
 		incorrect_icon_path=self.runtime.local_resource_url(self, 'public/imgs/incorrect-icon.png')
 		#Define variable to be used in HTML Template
 		context.update({
-			'questions': self.questions,	
+			'questions': self.questions,
+			'choices' : self.choices,
+			'learning_object_url' : self.learning_object_url,
 			'correct_icon' : correct_icon_path,
 			'incorrect_icon' : incorrect_icon_path
 		})
@@ -118,7 +129,30 @@ class MyXBlock(XBlock):
 	"""
 	END OF STUDENT VIEW SECTION
 	"""
-
+	def studio_view(self, context=None):
+		 """
+		The primary view of the MyXBlock, shown to teachers
+		when editing the block.
+		"""
+		html_edit_xblock = self.resource_string("static/html/myxblock_edit.html")
+		template = Template(html_edit_xblock)
+		
+		#merge group names and group values for easier iteration in Django template
+		#groups = [[name, value] for name, value in zip(self.groupNames, self.groupValues)]
+		
+		#parameters sent to browser for edit html page
+		html = template.render(Context({
+			'questions': self.questions,
+			'answers': self.answers,
+			'learning_object_url' : self.learning_object_url
+			}))
+		
+		frag = Fragment(html.format(self=self))
+		#adding references to external css and js files
+		frag.add_css(self.resource_string("static/css/myxblock_edit.css"))
+		frag.add_javascript(self.resource_string("static/js/src/myxblock_edit.js"))
+		frag.initialize_js('MyXBlockEdit')
+		return frag
 
 	"""
 	SELF-DEFINED FUNCTION, FOR AJAX OR ANY
@@ -138,6 +172,7 @@ class MyXBlock(XBlock):
 							result[question_num] = { key2:'true'}
 						else:
 							result[question_num] = { key2:'false'}
+						self.choices[key1][key2] == answer
 						break
 		return {
 			'Results': result
