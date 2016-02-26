@@ -82,7 +82,12 @@ class MyXBlock(XBlock):
 		default=[
 				"linkA","linkB","linkC"
 			],
-		help="Url of the learning object you want the student to learn", scope=Scope.settings)
+		help="Url of the learning object you want students to learn", scope=Scope.settings)
+	learning_object_name = List(
+		default=[
+			"How to be Mark","How to mark","Mark Mark"
+			],
+		help="Name of the learning object you want students to learn", scope=Scope.settings)
 	"""
 	 END OF FIELD SECTION.
 	"""
@@ -110,6 +115,7 @@ class MyXBlock(XBlock):
 			'questions': self.questions,
 			'choices' : self.choices,
 			'learning_object_url' : self.learning_object_url,
+			'learning_object_name' : self.learning_object_name,
 			'correct_icon' : correct_icon_path,
 			'incorrect_icon' : incorrect_icon_path
 		})
