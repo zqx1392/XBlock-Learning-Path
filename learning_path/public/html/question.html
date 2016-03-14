@@ -1,0 +1,51 @@
+<!-- TODO
+     1.conclusion at the end
+	 1.5  test grade
+-->
+
+<script>
+	//TO BE USED IN MYXBLOCK.JS, RECEIVED BY DJANGO
+	var CORRECT_ICON = "{{correct_icon}}";
+	var INCORRECT_ICON = "{{incorrect_icon}}";
+	var TOTAL_QUESTION = "{{total_question}}";
+</script>
+<div class="learning_path_question_block">
+<h2> {{test_title}}</h2>
+<div id="question-area">
+
+{% for number,question,answers in questions%}
+	{% for question_num,sub_question in question.items %}
+		<div {% if forloop.counter|stringformat:"i" != '1' or number != '1' %} class="hidden" {% endif %} id ='question-{{number}}s{{question_num}}'>
+		<span>
+
+			<form class="choicegroup" >
+				<fieldset  >
+				<p>{% if number == '1' and forloop.counter|stringformat:"i" == '1' %} {{number}}. {% endif %}{{sub_question}}</p>
+					{% for answer_num,answer_set in answers.items %}
+						{% if answer_num == question_num %}
+							{% for answer in answer_set %}
+								<label>
+									<input name="{{sub_question}}" id="answer{{number}}.{{question_num}}" value="{{answer}}" type="radio">  {{answer}} 
+								</label>
+							{% endfor %}
+						{% endif %}
+					{% endfor %}
+		
+					<input type="button" id = "{{sub_question}}" class="check" value="Check" >
+				</fieldset>
+		
+			</form>
+
+		</span>
+		</div>
+	{% endfor %}
+
+{% endfor %}
+</div>
+<fieldset class="hidden" id="test-result">
+	<p id="result-text">Result: </p>
+	<input type="button" id = "result-button" value="Go" >
+	<a class="hidden" id="html-link" href="/jump_to_id/1">link</a>
+</fieldset>
+
+</div>

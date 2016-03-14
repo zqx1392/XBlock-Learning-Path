@@ -1,0 +1,206 @@
+"""TO-DO: Write a description of what this XBlock is."""
+
+import pkg_resources
+from django.template import Template, Context
+from xblock.core import XBlock
+from xblock.fields import Scope, String, Dict, List, Boolean, Integer
+from xblock.fragment import Fragment
+
+class BasePathBlock(XBlock):
+
+	# Fields are defined on the class.  You can access them in your code as
+	# self.<fieldname>.
+
+	temperVar = String(scope=Scope.preferences, default="")
+		# FOR QUESTION XBLOCK
+	# question : its format is (('question_number',
+	#							{'subquestion_number_1':'question_content_1','subquestion_number_2':'question_content_2',...},
+	#							{'subanswer_number_1':['answer_1','answer_2','answer_3','answer_4'],'subanswer_number_2':['answer_1','answer_2','answer_3','answer_4'],...}
+	#							))
+	total_question = Integer (default=3,scope=Scope.settings, help="Number of questions")
+	questions = List(
+		default=[
+            (('1', {'0': 'How old are you', '1': 'How young are you','2': 'How fat are you', '3': 'How small are you' },
+	      {'0': ['10','11','12','13'],'1': ['5','4','2','3'],'2': ['50','51','52','53'],'3': ['120','130','140','150']}
+	    )),
+            (('2',{'0': 'Do you know math', '1': 'Do you know algrebra','2': 'Do you know English', '3': 'Do you know human language'},
+	     {'0': ['yes','maybe','no','why?'],'1': ['yes','maybe','no','why?'],'2': ['yes','maybe','no','why?'],'3':['yes','maybe','no','why?']}
+	    )),
+            (('3',{'0': 'Can you calculate', '1': 'Can you Multiple','2': 'Can you subtract', '3': 'Can you count' },
+	     {'0': ['yes','Of course','What','why?'],'1': ['yes','maybe','no','why?'],'2': ['yes','maybe','no','why?'],'3':['yes','maybe','no','why?']}
+	    ))
+        ],
+        scope=Scope.settings, help="Questions and Answers list for each test"
+	)
+	# answer : get value directly from questions list and record correct answers
+	answers = List(
+		default=[
+				['13','2','51','140'],
+				['yes','yes','yes','yes'],
+				['What','yes','yes','yes']
+			],
+		scope=Scope.settings, help="Correct answers for the questions"
+    	)
+	choices = List(
+		default=[
+				['','','',''],
+				['','','',''],
+				['','','','']
+			],
+		scope=Scope.user_state, help="The student's answer")
+	learning_object_url = String(
+		default=[
+				"linkA","linkB","linkC"
+			],
+		help="Url of the learning object you want students to learn", scope=Scope.settings)
+	learning_object_name = List(
+		default=[
+			"How to be Mark","How to mark","Mark Mark"
+			],
+		help="Name of the learning object you want students to learn", scope=Scope.settings)
+	test_status = String(default="untake",scope=Scope.settings, help="Status of the test, it can be untake, taking, took")
+	test_type = String(default="pre",scope=Scope.content, help="Type of the test, it can be pre,post, and quiz")
+	has_score = True
+
+	# DEFAULT FUNCTION TO RETRIEVE RESOURCE : DO NOT EDIT!
+	def resource_string(self, path):
+		"""Handy helper for getting resources from our kit."""
+		data = pkg_resources.resource_string(__name__, path)
+		return data.decode("utf8")
+	
+	"""
+	The primary view of the MyXBlock, shown to teachers
+	when editing the block.
+	
+	def studio_view(self, context=None):
+
+		html_edit_xblock = self.resource_string("static/html/myxblock_edit.html")
+		template = Template(html_edit_xblock)
+
+		#merge group names and group values for easier iteration in Django template
+		#groups = [[name, value] for name, value in zip(self.groupNames, self.groupValues)]
+
+		#parameters sent to browser for edit html page
+		html = template.render(Context({
+			'questions': self.questions,
+			'answers': self.answers,
+			'learning_object_url' : self.learning_object_url
+			}))
+
+		frag = Fragment(html.format(self=self))
+		#adding references to external css and js files
+		frag.add_css(self.resource_string("static/css/myxblock_edit.css"))
+		frag.add_javascript(self.resource_string("static/js/src/myxblock_edit.js"))
+		frag.initialize_js('MyXBlockEdit')
+		return frag
+	"""
+
+	"""
+	STUDENT VIEW SECTION
+	"""
+	# STUDENT VIEW, LOAD ALL FRONT-END OR NECESSARY FILES AND SEND TO THE USER.
+	def student_view(self, context=None):
+		"""
+		The primary view of the MyXBlock, shown to students
+		when viewing courses.
+		"""
+		if not context:
+			context = {}
+		#Define path for images to be used on html template
+		correct_icon_path=self.runtime.local_resource_url(self, 'public/imgs/correct-icon.png')
+		incorrect_icon_path=self.runtime.local_resource_url(self, 'public/imgs/incorrect-icon.png')
+		#Define variable to be used in HTML Template
+		context.update({
+			'questions': self.questions,
+			'total_question' : self.total_question,
+			'correct_icon' : correct_icon_path,
+			'incorrect_icon' : incorrect_icon_path,
+			'temperVar' : self.temperVar
+		})
+		html = Template(
+			self.resource_string("public/html/myxblock.html")).render(Context(context)
+		)
+		frag = Fragment(html)
+	# LOAD CSS
+		frag.add_css(self.resource_string("public/css/myxblock.css"))
+	# LOAD JS
+		frag.add_javascript(self.resource_string("public/js/src/myxblock.js"))
+	# CREATE XBLOCK
+		frag.initialize_js('BasePathBlock')
+		return frag
+	"""
+	END OF STUDENT VIEW SECTION
+	"""
+
+
+	"""
+	SELF-DEFINED FUNCTION, FOR AJAX OR ANY
+	"""
+	def submit_grade(self, data, suffix=''):
+		self.runtime.publish(self, "grade",
+                    { value: 0.8,
+                      max_value: 1.0 })
+	# CHECK ANSWER FROM XBLOCK'S DATABASE AND RETURN THE RESULT in form {'question_number': {'sub_question_number':'result(true or false)'}}
+	@XBlock.json_handler
+	def get_answer(self, data, suffix=''):   
+		result = {}
+		for question,answer in data.items():
+			if answer == '12':
+				self.temperVar = "ok"
+			elif answer == '11':
+				self.temperVar = "nope"
+			for key1 in range(0,len(self.questions)):	        		        
+				for key2 in range(0,4):
+					temp = str(key2)
+					if self.questions[key1][1][temp] == question:
+						question_num = key1 + 1
+						if self.answers[key1][key2] == answer:
+							result[question_num] = { key2:'true'}
+						else:
+							result[question_num] = { key2:'false'}
+						self.choices[key1][key2] = answer
+						break
+		return {
+			'Results': result,
+			'temperVar' : self.temperVar,
+			'choices' : self.choices 
+		}
+
+	# GET LEARNING OBJECT LINK AND NAME WHEN A STUDENT ANSWERS ALL QUESTIONS
+	@XBlock.json_handler
+	def get_lo(self, data, suffix=''):   
+		num = 0
+		for head,number in data.items():
+			num = int(number)
+		return {
+			'learning_object_url' : self.learning_object_url[num],
+			'learning_object_name' : self.learning_object_name[num]
+		}
+
+	"""
+	END OF SELF-DEFINED FUNCTION
+	"""
+
+	# TO-DO: change this to create the scenarios you'd like to see in the
+	# workbench while developing your XBlock.
+	# USED IN XBLOCK-SDK
+	@staticmethod
+	def workbench_scenarios():
+		"""A canned scenario for display in the workbench."""
+		return [
+			("MyXBlock",
+			 """<vertical_demo>
+				<question/>
+				</vertical_demo>
+			 """),
+			("Multiple MyXBlock",
+			 """<vertical_demo>
+				<question/>
+				<question/>
+				<question/>
+				</vertical_demo>
+			"""),
+		]
+
+
+	

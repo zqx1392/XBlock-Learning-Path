@@ -1,0 +1,9 @@
+/* CSS for LinkBlock */
+
+#linker-button {
+	float: right;
+}
+.hidden {
+    display: none;
+}
+
