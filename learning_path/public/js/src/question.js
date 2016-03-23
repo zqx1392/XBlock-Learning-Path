@@ -38,6 +38,7 @@ function QuestionBlock(runtime, element) {
 								showNextquestion(question_number);
 							}
 							else {
+								skip_test = false;
 								if (current_total_sub_question>0){
 									showSubQuestion(question_number,sub_question_number);	
 								}
@@ -46,7 +47,7 @@ function QuestionBlock(runtime, element) {
 										showLOLinkPopup(question_number,sub_question_number);
 									}
 									else {
-										skip_test = false;
+										
 										showNextquestion(question_number);
 									}
 								}
@@ -58,13 +59,7 @@ function QuestionBlock(runtime, element) {
 								showSubQuestion(question_number,sub_question_number);
 							}
 							else {
-								if (data.has_lo_link){
-									showLOLinkPopup(question_number,sub_question_number);
-								}
-								else {
-									skip_test = false;
-									showSubQuestion(question_number,sub_question_number);
-								}
+								showLOLinkPopup(question_number,sub_question_number);
 									
 							}
 						}
