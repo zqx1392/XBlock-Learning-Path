@@ -3,21 +3,22 @@ function QuestionBlock(runtime, element) {
 
 
     /* DEFINE URL(FUNCTION) TO USE FROM MYXBLOCK.PY, IN THIS CASE WE CALL FUNCTION */
-	//link to get_answer function in python server
-    var checkUrl = runtime.handlerUrl(element,'get_answer');
-	var LOLinkUrl = runtime.handlerUrl(element,'get_lo');
-	var passTestUrl = runtime.handlerUrl(element,'pass_test');
+		//link to get_answer function in python server
+	var checkUrl = runtime.handlerUrl(element,'get_answer');
+	var finishTestUrl = runtime.handlerUrl(element,'finish_test');
 	var loadChoiceUrl = runtime.handlerUrl(element,'load_choice');
 
 	//choose all element that is <input type="radio">
-    var answers = $('input[type=radio]', element);
+	var answers = $('input[type=radio]', element);
 	// count total question which representing users.
-    var current_question_number = 1;
+	var current_question_number = 1;
 	// count total correct sub question
 	var count_correct_sub_question = 0;
 	// set current sub question number
 	var current_total_sub_question = 0;
-
+	// check whether a student can skip lesson or not
+	var skip_test = true;
+	
     $('.check', element).click(function(eventObject) {
 
         $.ajax({
@@ -31,18 +32,44 @@ function QuestionBlock(runtime, element) {
 					$.each(sub_question, function(sub_question_number, result){
 						question_number = parseInt(question_number);
 						sub_question_number = parseInt(sub_question_number);
-						if (sub_question_number == 1 ) current_total_sub_question = data.sub_question_count -1;
+						if (sub_question_number == 1 ) { 
+							current_total_sub_question = data.sub_question_count -1;
+							if (result == true){
+								showNextquestion(question_number);
+							}
+							else {
+								if (current_total_sub_question>0){
+									showSubQuestion(question_number,sub_question_number);	
+								}
+								else {
+									if (data.has_lo_link){
+										showLOLinkPopup(question_number,sub_question_number);
+									}
+									else {
+										skip_test = false;
+										showNextquestion(question_number);
+									}
+								}
+							}
+						}
+						else {
+							if (result == 'true'){
+								count_correct_sub_question++;
+								showSubQuestion(question_number,sub_question_number);
+							}
+							else {
+								if (data.has_lo_link){
+									showLOLinkPopup(question_number,sub_question_number);
+								}
+								else {
+									skip_test = false;
+									showSubQuestion(question_number,sub_question_number);
+								}
+									
+							}
+						}
 						//show green or red border with correct/incorrect icon			
 						updateAnswerUI(result);
-						//show next main question if the answer is correct and the answered question is also main question
-						if (result == 'true' && sub_question_number == 1)
-							showNextQuestion(question_number);
-						//in case it is incorrect answer, just show its subquestion. if the question is also subquestion itself, just show next subquestion regardless of right/wrong.
-						else{
-							if (result == 'true')
-								count_correct_sub_question++; 
-							showSubQuestion(question_number,sub_question_number);
-						}
 						//update UI to disable the answered question
 						disableQuestion(question_number,sub_question_number);			
 					});
@@ -76,40 +103,44 @@ function QuestionBlock(runtime, element) {
 	
 	// Show sub question after a student answered a question wrong.
     var showSubQuestion = function( question_number, sub_question_number ){
-			//if it is not the third subquestion
+			//if it is not the last subquestion
 			if (sub_question_number < current_total_sub_question + 1){		
 				sub_question_number++;				
 				current_question_number++;			
 				$('#question-' + question_number + 's' + sub_question_number, element).appendTo("#question-area");
 				$('#question-' + question_number + 's' + sub_question_number, element).removeClass("hidden").find("p").prepend(current_question_number+". ");			
 			}
-			//In case it is the third subquestion and a student answered all 3 subquestion correctly, show next main question
-			else if (count_correct_sub_question == current_total_sub_question){
+			//In case it is the last subquestion and a student answered all 3 subquestion correctly, show next main question
+			//else if (count_correct_sub_question == current_total_sub_question){
+			else {
 				count_correct_sub_question = 0;
 				showNextQuestion(question_number);
 			}
+			/*
 			else {
-				
 				count_correct_sub_question = 0;
 				getLOLink(question_number);
 			}
+			*/
 	};
     // Show next question after a student answered a question correct.
     var showNextQuestion = function( question_number){
 		q_num = question_number + 1 ;
 		current_question_number++;
+		//student answer all questions correctly
 		if(q_num > TOTAL_QUESTION){
 			showLOLinkPopup(q_num,"");
 		}
 		$('#question-' + q_num + 's1', element).appendTo("#question-area");
 		$('#question-' + q_num + 's1', element).removeClass("hidden").find("p").prepend(current_question_number+". ");
-		
 	};
+	
 	//disable a question after a student answered
 	var disableQuestion = function( question_number, sub_question_number ){
 		$('#question-' + question_number + 's' + sub_question_number, element).addClass("disabledbutton");
         $('#question-' + question_number + 's' + sub_question_number + ' :input',element).attr('disabled', true);
 	};
+	
 	//show correct or incorrect icon on UI, and highlight a selected choice with red or green border.
 	var updateAnswerUI = function(result){
 		if (result == 'true')
@@ -119,8 +150,17 @@ function QuestionBlock(runtime, element) {
 	};
 
 	//show result in html
-	var showLOLinkPopup = function(question_number,lo_data){
+	var showLOLinkPopup = function(question_number,sub_question_number){
+		//Student fails the test.
 		if (question_number <= TOTAL_QUESTION){
+			var test_result = {'Result':'Failed'};
+			test_result['question_num'] = question_number;
+			test_result['sub_question_num'] = sub_question_number;
+			$.ajax({
+		        type: "POST",
+		        url: finishTestUrl,
+		        data: JSON.stringify(test_result),
+		        success: function (lo_data) {
 				var url = lo_data.learning_object_url;
 				var header = lo_data.learning_object_name;
 				$('#test-result',element).removeClass("hidden").find("#result-text").append("Your prerequisite lesson is " + header);
@@ -128,20 +168,24 @@ function QuestionBlock(runtime, element) {
 				html_location = html_location.substring(0,html_location.length-1);
 				html_location += url;
 				$('#test-result',element).find("#result-button").attr("onclick","location.href='"+ html_location + "';");
-				
 				//block-v1:Right+1101+2016_T1+type@link+block@4429c2de8f854132a3a5d19c1c2e3b2e
-				
+		        },
+		   		error: function (textStatus, errorThrown) {
+
+		        }
+		    });
 		}
+		//Student passes the test.
 		else {
-			var zzz = {};
+			var test_result = {'Result':'Passed'};
 			$.ajax({
 		        type: "POST",
-		        url: passTestUrl,
-		        data: JSON.stringify(zzz),
+		        url: finishTestUrl,
+		        data: JSON.stringify(test_result),
 		        success: function (data) {
-					$("#result-button").addClass("hidden");			
-					$('#test-result',element).removeClass("hidden").find("#result-text").append("You have passed the test and ready to learn next lesson!");
-					location.href = "#test-result";
+				$("#result-button").addClass("hidden");			
+				$('#test-result',element).removeClass("hidden").find("#result-text").append("You have passed the test and ready to learn next lesson!");
+				location.href = "#test-result";
 		        },
 		   		error: function (textStatus, errorThrown) {
 
@@ -151,6 +195,7 @@ function QuestionBlock(runtime, element) {
 			
 		}	
 	};
+	/*
 	// request Learning Object-related data from server
 	var getLOLink = function(question_number){
 		var qn = {}
@@ -169,6 +214,7 @@ function QuestionBlock(runtime, element) {
             }
         });
 	}
+	*/
 
  
 	
