@@ -22,7 +22,7 @@ def package_data(pkg, roots):
 
 setup(
     name='xblock-learning_path',
-    version='0.710',
+    version='0.724',
     description='An Xblock to guide students through a course with adaptive learning path',
     packages=[
         'learning_path',

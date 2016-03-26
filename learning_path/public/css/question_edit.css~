@@ -17,52 +17,53 @@ input.group-name, input.group-value {
 
 .checkboxer{
 	border-bottom-color: rgb(249, 249, 248);
-border-bottom-left-radius: 0px;
-border-bottom-right-radius: 0px;
-border-bottom-style: inset;
-border-bottom-width: 0px;
-border-image-outset: 0 0 0 0;
-border-image-repeat: stretch stretch;
-border-image-slice: 100% 100% 100% 100%;
-border-image-source: none;
-border-image-width: 1 1 1 1;
-border-left-color: rgb(249, 249, 248);
-border-left-style: inset;
-border-left-width: 0px;
-border-right-color: rgb(249, 249, 248);
-border-right-style: inset;
-border-right-width: 0px;
-border-top-color: rgb(249, 249, 248);
-border-top-left-radius: 0px;
-border-top-right-radius: 0px;
-border-top-style: inset;
-border-top-width: 0px;
-box-sizing: border-box;
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
+	border-bottom-style: inset;
+	border-bottom-width: 0px;
+	border-image-outset: 0 0 0 0;
+	border-image-repeat: stretch stretch;
+	border-image-slice: 100% 100% 100% 100%;
+	border-image-source: none;
+	border-image-width: 1 1 1 1;
+	border-left-color: rgb(249, 249, 248);
+	border-left-style: inset;
+	border-left-width: 0px;
+	border-right-color: rgb(249, 249, 248);
+	border-right-style: inset;
+	border-right-width: 0px;
+	border-top-color: rgb(249, 249, 248);
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	border-top-style: inset;
+	border-top-width: 0px;
+	box-sizing: border-box;
 
-direction: ltr;
-height: 14px;
-line-height: 23.6833px;
-list-style-image: none;
-list-style-position: outside;
-list-style-type: none;
-margin-bottom: 0px;
-margin-left: 0px;
-margin-right: 0px;
-margin-top: 0px;
-min-width: 10px;
-padding-bottom: 0px;
-padding-left: 0px;
-padding-right: 0px;
-padding-top: 0px;
-text-align: start;
-text-indent: 0px;
-text-overflow: ellipsis;
-text-rendering: optimizelegibility;
-width: 20px;
--moz-border-bottom-colors: none;
--moz-border-left-colors: none;
--moz-border-right-colors: none;
--moz-border-top-colors: none;
+	direction: ltr;
+	height: 14px;
+	line-height: 23.6833px;
+	list-style-image: none;
+	list-style-position: outside;
+	list-style-type: none;
+	margin-bottom: 0px;
+	margin-left: 0px;
+	margin-right: 0px;
+	margin-top: 0px;
+	min-width: 40px;
+	min-height : 40px;
+	padding-bottom: 0px;
+	padding-left: 0px;
+	padding-right: 0px;
+	padding-top: 0px;
+	text-align: start;
+	text-indent: 0px;
+	text-overflow: ellipsis;
+	text-rendering: optimizelegibility;
+	width: 20px;
+	-moz-border-bottom-colors: none;
+	-moz-border-left-colors: none;
+	-moz-border-right-colors: none;
+	-moz-border-top-colors: none;
 
 }
 .min-max-button{
@@ -71,7 +72,18 @@ width: 20px;
     height: 23px;
     float:right;
     cursor:pointer;
+	text-align: center;
 }
+.question-set .min-max-button{
+    border:solid 1px;
+    width: 25px;
+    height: 23px;
+    float:right;
+	margin : 0 15px 0 0;
+    cursor:pointer;
+	text-align: center;
+}
+
 /*
 
 .comp-setting-entry {

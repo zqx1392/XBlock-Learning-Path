@@ -1,6 +1,6 @@
 /* CSS for MyXBlock */
 
-.myxblock_block .check {
+.learning_path_question_block .check {
     background-clip: padding-box;
 	background-color: rgb(241, 241, 241);
 	background-image: linear-gradient(rgb(241, 241, 241), rgb(217, 209, 209)); /* rgb(220, 220, 220), rgb(197, 180, 180) */
@@ -74,7 +74,7 @@
 	-moz-border-top-colors: none;
 }
 
-.myxblock_block .choicegroup {
+.learning_path_question_block .choicegroup {
  	color: rgb(60, 60, 60);
 	font-family: "Open Sans",Verdana,Geneva,sans-serif,sans-serif;
 	font-feature-settings: normal;
@@ -106,7 +106,7 @@
 
 }
 
-.myxblock_block label {
+.learning_path_question_block label {
 	border-bottom-color: rgb(227, 227, 227);
 	border-bottom-left-radius: 3px;
 	border-bottom-right-radius: 3px;
@@ -166,10 +166,96 @@
 	-moz-border-right-colors: none;
 	-moz-border-top-colors: none;
 }
+.choicegroup .question-pic {
+	display : block;
+}
 .hidden {
     display: none;
 }
 .disabledbutton {
     pointer-events: none;
     opacity: 0.6;
+}
+.self-modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.self-modal-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 0;
+    border: 1px solid #888;
+    width: 40%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s
+}
+
+/* Add Animation */
+@-webkit-keyframes animatetop {
+    from {top:-300px; opacity:0} 
+    to {top:0; opacity:1}
+}
+
+@keyframes animatetop {
+    from {top:-300px; opacity:0}
+    to {top:0; opacity:1}
+}
+
+/* The Close Button */
+.close-self-modal {
+    color: white;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-self-modal:hover,
+.close-self-modal:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.self-modal-header {
+    padding: 2px 16px;
+    background-color: #33CCFF;
+	height : 55px;
+    color:white;
+
+}
+.self-modal-header p {
+    margin: 15px 0px;
+
+}
+
+.self-modal-body {padding: 20px 16px; text-align: center; height : 70px;}
+.self-modal-body p {margin: 18px 0px;}
+
+.self-modal-footer {
+    padding: 2px 16px;
+    background-color: #F0F0F0; 
+	height : 60px;
+
+}
+#result-button {
+    margin: 17px 0px;
+    float: right;
+}
+#dummy {
+	visibility:hidden;
 }

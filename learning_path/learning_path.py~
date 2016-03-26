@@ -14,11 +14,10 @@ class BasePathBlock(XBlock):
 	# Fields are defined on the class.  You can access them in your code as
 	# self.<fieldname>.
 
-	temperVar = String(scope=Scope.preferences, default="")
 	#record current LO test a student taking.
 	current_lo_links = List(scope=Scope.user_info,default=[""])
-	current_lo_name = String(scope=Scope.preferences,default="")
-
+	current_lo_names = String(scope=Scope.user_info,default=[""])
+	
 
 	# DEFAULT FUNCTION TO RETRIEVE RESOURCE : DO NOT EDIT!
 	def resource_string(self, path):
@@ -39,17 +38,20 @@ class QuestionBlock(BasePathBlock):
 	total_question = Integer (default=3,scope=Scope.settings, help="Number of questions")
 	questions = List(
 		default=[
-            (['1', {'1': 'How old are you', '2': 'How young are you','3': 'How fat are you', '4': 'How small are you' },
-	      {'1': ['10','11','12','13'],'2': ['5','4','2','3'],'3': ['50','51','52','53'],'4': ['120','130','140','150']}
-	    ]),
-            (['2',{'1': 'Do you know math', '2': 'Do you know algrebra','3': 'Do you know English', '4': 'Do you know human language'},
-	     {'1': ['yes','maybe','no','why?'],'2': ['yes','maybe','no','why?'],'3': ['yes','maybe','no','why?'],'4':['yes','maybe','no','why?']}
-	    ]),
-            (['3',{'1': 'Can you calculate', '2': 'Can you Multiple','3': 'Can you subtract', '4': 'Can you count' },
-	     {'1': ['yes','Of course','What','why?'],'2': ['yes','maybe','no','why?'],'3': ['yes','maybe','no','why?'],'4':['yes','maybe','no','why?']}
-	    ])
-        ],
-        scope=Scope.settings, help="Questions and Answers list for each test"
+			(['1', {'1': '\(E = m c^2\)', '2': '<u>How young are you</u>','3': 'How fat are you', '4': 'How small are you' },
+			{'1': ['10','11','12','13'],'2': ['5','4','2','3'],'3': ['50','51','52','53'],'4': ['120','130','140','150']},
+			{'1': '', '2': '','3': '', '4': '' }
+		]),
+			(['2',{'1': 'Do you know math', '2': 'Do you know algrebra','3': 'Do you know English', '4': 'Do you know human language'},
+			{'1': ['yes','maybe','no','why?'],'2': ['yes','maybe','no','why?'],'3': ['yes','maybe','no','why?'],'4':['yes','maybe','no','why?']},
+			{'1': '', '2': '','3': '', '4': '' }
+		]),
+			(['3',{'1': 'Can you calculate', '2': 'Can you Multiple','3': 'Can you subtract', '4': 'Can you count' },
+			{'1': ['yes','Of course','What','why?'],'2': ['yes','maybe','no','why?'],'3': ['yes','maybe','no','why?'],'4':['yes','maybe','no','why?']},
+			{'1': '', '2': '','3': '', '4': '' }
+		])
+		],
+		scope=Scope.settings, help="Questions and Answers list for each test"
 	)
 	# answer : get value directly from questions list and record correct answers
 	answers = List(
@@ -69,17 +71,20 @@ class QuestionBlock(BasePathBlock):
 		scope=Scope.user_state, help="The student's answer")
 	learning_object_url = List(
 		default=[
-				"linkA","linkB","linkC"
+					["","linkB","linkC","linkY"],
+					["","linkE","linkF","linkZ"],
+					["","link2","link3","link4"]
 			],
 		help="Url of the learning object you want students to learn", scope=Scope.settings)
 	learning_object_name = List(
 		default=[
-			"How to be Mark","How to mark","Mark Mark"
+				["","How to mark","Mark Mark","Marking"],
+				["Mark1","Mark2","Mark3","MarkZ"],
+				["Mark4","Mark5","Mark6","MarkXXX"]
 			],
 		help="Name of the learning object you want students to learn", scope=Scope.settings)
 	test_status = String(default="untake",scope=Scope.settings, help="Status of the test, it can be untake, taking, took")
 	test_type = String(default="pre",scope=Scope.content, help="Type of the test, it can be pre,post, and quiz")
-	
 	has_score = True
 
 	"""
@@ -175,27 +180,29 @@ class QuestionBlock(BasePathBlock):
 	def get_answer(self, data, suffix=''):
 		result = {}
 		sub_q_count = 0
+		has_lo_link = False
 		for question,answer in data.items():
-			for key1 in range(0,len(self.questions)):
-				for key2 in range(1,len(self.questions[key1][1])+1):
-					temp = str(key2)
-					if self.questions[key1][1][temp] == question:
-						question_num = key1 + 1
-						if self.answers[key1][key2-1] == answer:
-							result[question_num] = { temp:'true'}
-						else:
-							result[question_num] = { temp:'false'}
-						sub_q_count = len(self.answers[key1])
-						if len(self.choices) == key1 or len(self.choices) == 0 :
-							self.choices.append([])
-						if len(self.choices[key1]) == key2-1 or len(self.choices[key1]) == 0 :
-							self.choices[key1].append('') 
-						self.choices[key1][key2-1] = answer
-						break
+			question_pos = question.split(".")
+			key1 = int(question_pos[0])
+			key2 = int(question_pos[1])
+			if self.answers[key1-1][key2-1] == answer:
+				result[key1] = { key2:'true'}
+			else:
+				result[key1] = { key2:'false'}
+			sub_q_count = len(self.answers[key1-1])
+			#check if this question has their own lo_link
+			if self.learning_object_url[key1-1][key2-1] != "":
+				has_lo_link = True
+			#add student's choice to database
+			if len(self.choices) == key1-1 or len(self.choices) == 0 :
+				self.choices.append([])
+			if len(self.choices[key1-1]) == key2-1 or len(self.choices[key1-1]) == 0 :
+				self.choices[key1-1].append('') 
+			self.choices[key1-1][key2-1] = answer			
 		return {
 			'Results': result,
 			'sub_question_count' : sub_q_count,
-			'choices' : self.choices
+			'has_lo_link' : has_lo_link
 		}	
 	# EDIT QUESTION
 	@XBlock.json_handler
@@ -211,35 +218,24 @@ class QuestionBlock(BasePathBlock):
 			'result' : 'success' 
 		}
 
-	# GET LEARNING OBJECT LINK AND NAME WHEN A STUDENT ANSWERS ALL QUESTIONS
 	@XBlock.json_handler
-	def get_lo(self, data, suffix=''):
+	def finish_test(self, data, suffix=''):
 		uniqueId = unicode(self.scope_ids.usage_id)
 		uniqueId = uniqueId.split("@")
 		uniqueId = uniqueId[-1]
-		self.current_lo_links.insert(0,uniqueId)
-		"""
-		self.runtime.publish(self, "grade",
-                    { 'value': 5.0,
-                      'max_value': 10.0 })
-		"""
-		num = 0
-		for head,number in data.items():
-			num = int(number)-1
+		learning_link = ""
+		learning_name = ""
+		if data['result'] == 'passed':
+			if uniqueId in self.current_lo_links:
+				self.current_lo_links.remove(uniqueId)
+		else :
+			self.current_lo_links.insert(0,uniqueId)
+			learning_link = self.learning_object_url[data['question_num']-1][data['sub_question_num']-1]
+			learning_name = self.learning_object_name[data['question_num']-1][data['sub_question_num']-1]
 		return {
-			'learning_object_url' : self.learning_object_url[num],
-			'learning_object_name' : self.learning_object_name[num],
-			'lo_link' : self.current_lo_links[0]
-		}
-	@XBlock.json_handler
-	def pass_test(self, data, suffix=''):
-		uniqueId = unicode(self.scope_ids.usage_id)
-		uniqueId = uniqueId.split("@")
-		uniqueId = uniqueId[-1]
-		if uniqueId in self.current_lo_links:
-			self.current_lo_links.remove(uniqueId)
-		return {
-			'result' : 'success'
+			'result' : 'success',
+			'learning_object_url' : learning_link,
+			'learning_object_name' : learning_name
 		} 
 
 	"""
@@ -271,13 +267,14 @@ class LinkBlock(BasePathBlock):
 	"""
 	display_name = String(default="Learning Path Link",scope=Scope.settings)
 	# STUDENT VIEW, LOAD ALL FRONT-END OR NECESSARY FILES AND SEND TO THE USER.
+
 	def student_view(self, context=None):
 		if not context:
 			context = {}
 		#Define variable to be used in HTML Template
 		context.update({
 			'lo_link' : self.current_lo_links[0],
-			'lo_name' : self.current_lo_name
+			'lo_name' : self.current_lo_names[0]
 		})
 		html = Template(
 			self.resource_string("public/html/link.html")).render(Context(context)
@@ -290,6 +287,7 @@ class LinkBlock(BasePathBlock):
 	# CREATE XBLOCK
 		frag.initialize_js('LinkBlock')
 		return frag
+
 	"""
 	END OF STUDENT VIEW SECTION
 	"""
