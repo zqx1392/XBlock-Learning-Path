@@ -70,7 +70,7 @@
 									<!-- Picture -->
 									<div class="wrapper-comp-setting" >
 										<!-- Sub Question Number Label -->
-										<label class="label setting-label">Q{{number}}.{{question_num}} Picture Url</label>
+										<label class="label setting-label">Q{{number}}.{{question_num}} Picture</label>
 										<!-- End of Sub Question Number Label -->
 										<!-- Sub Picture Content -->
 										{% for pic_num,picture in pictures_set.items%}
@@ -81,7 +81,6 @@
 											{% endif %}
 										{% endfor %}
 										<!-- End of Picture Content-->
-										
 									</div>
 									<!-- End of Picture -->
 									<!-- End of Question Part -->

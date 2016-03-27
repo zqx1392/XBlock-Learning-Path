@@ -35,7 +35,7 @@
 									{% endif %}
 								{% endfor %}
 								<label>
-									<input name="{{number}}.{{question_num}}" id="answer{{number}}.{{question_num}}.5" value="I don't know" type="radio"> ไม่รู้คำตอบ
+									<input name="{{number}}.{{question_num}}" id="answer{{number}}.{{question_num}}.5" value="I don't know" type="radio"> I don't know 
 								</label>
 								<input type="button" id = "{{number}}.{{question_num}}" class="check" value="Check" >
 							</fieldset>

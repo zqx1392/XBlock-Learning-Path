@@ -1,0 +1,19 @@
+<!-- TODO
+     1.conclusion at the end
+	 1.5 enable grade and pre-post test variable, test grade
+	 2. return to previous test -- xblock
+	 3. Create Visual Path
+-->
+
+<script>
+	//TO BE USED IN MYXBLOCK.JS, RECEIVED BY DJANGO
+	var LO_LINK = "{{lo_link}}";
+	var LO_NAME = "{{lo_name}}";
+</script>
+<div class="learning_path_link_block">
+	<fieldset id="lo-linker">
+		<input type="button" id = "linker-button" value="Return to the previous test" >
+		<p>{{unique}}</p>
+		<a class="hidden" id="linker-html-link" href="/jump_to_id/1">link</a>
+	</fieldset>
+</div>
