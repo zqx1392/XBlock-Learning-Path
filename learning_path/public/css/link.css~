@@ -1,9 +1,0 @@
-/* CSS for LinkBlock */
-
-.learning_path_link_block {
-
-}
-.hidden {
-    display: none;
-}
-
