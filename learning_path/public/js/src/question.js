@@ -217,7 +217,7 @@ function QuestionBlock(runtime, element) {
 		        url: finishTestUrl,
 		        data: JSON.stringify(test_result),
 		        success: function (data) {		
-					$("#result-text").text("You have passed the test and ready to learn this lesson!");
+					$("#result-text").text("You don't pass the test and should learn this lesson.");
 					modal.style.display = "block";
 		        },
 		   		error: function (textStatus, errorThrown) {
