@@ -1,19 +1,20 @@
 /* Javascript for MyXBlock. */
 function LinkBlock(runtime, element) {
+	var clearData = runtime.handlerUrl(element,'clear_data');
+	$('#clear-history', element).click(function(eventObject) {
+		var zzz = {'ha':'ho'};
+        $.ajax({
+            type: "POST",
+            url: clearData,
+			//get data from gather...() function
+            data: JSON.stringify(zzz),
+            success: function (data) {alert("Test History has been cleared successfully"); window.location.reload(true);},
+	   		error: function (textStatus, errorThrown) {
 
-
-    /* DEFINE URL(FUNCTION) TO USE FROM MYXBLOCK.PY, IN THIS CASE WE CALL FUNCTION */
-	//link to get_answer function in python server
-	/*
-    var checkUrl = runtime.handlerUrl(element,'get_answer');
-	var LOLinkUrl = runtime.handlerUrl(element,'get_lo');
-	$('.linker-button',element).click(function(){
-		var html_location = $('#linker-html-link',element).attr("href");
-		html_location = html_location.substring(0,html_location.length-1);
-		html_location += LO_LINK;
-		$('#lo-linker',element).find("#linker-html-link").attr("onclick","location.href='"+ html_location + "';");
+	        }
+		});
 	});
-	*/
+  
 
     
 

@@ -7,12 +7,12 @@
 
 <script>
 	//TO BE USED IN MYXBLOCK.JS, RECEIVED BY DJANGO
-	var LO_LINK = "{{lo_link}}";
-	var LO_NAME = "{{lo_name}}";
+	var LO_LINK = "{{lo_link.link}}";
 </script>
 <div class="learning_path_link_block">
 	<fieldset id="lo-linker">
-		<input type="button" id = "linker-button" value="Return to the previous test" >
+		<button type="button" id = "linker-button" > Return to the previous test <br> {{lo_link.name}} </button>
+		<button type="button" id = "clear-history" > Clear test history </button>
 		<a class="hidden" id="linker-html-link" href="/jump_to_id/1">link</a>
 	</fieldset>
 </div>

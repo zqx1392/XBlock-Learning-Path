@@ -15,8 +15,7 @@ class BasePathBlock(XBlock):
 	# self.<fieldname>.
 
 	#record current LO test a student taking.
-	current_lo_links = List(scope=Scope.user_info,default=[""])
-	current_lo_names = String(scope=Scope.user_info,default=[""])
+	current_lo_links = List(scope=Scope.user_info,default=[{'link':'','name':''}])
 	
 
 	# DEFAULT FUNCTION TO RETRIEVE RESOURCE : DO NOT EDIT!
@@ -223,15 +222,20 @@ class QuestionBlock(BasePathBlock):
 		uniqueId = unicode(self.scope_ids.usage_id)
 		uniqueId = uniqueId.split("@")
 		uniqueId = uniqueId[-1]
+		lo_temp = {'link':uniqueId,'name':self.test_title}
 		learning_link = ""
 		learning_name = ""
 		if data['result'] == 'passed':
-			if uniqueId in self.current_lo_links:
-				self.current_lo_links.remove(uniqueId)
-				self.current_lo_names.remove(self.test_title)
+			for lo_object in self.current_lo_links:
+				if uniqueId == lo_object['link']:
+					self.current_lo_links.remove(lo_object)
 		else :
-			self.current_lo_links.insert(0,uniqueId)
-			self.current_lo_names.insert(0,self.test_title)
+			is_already_in = False
+			for lo_object in self.current_lo_links:
+				if uniqueId == lo_object['link']:
+					is_already_in = True
+			if not is_already_in:			
+				self.current_lo_links.insert(0,lo_temp)
 			learning_link = self.learning_object_url[data['question_num']-1][data['sub_question_num']-1]
 			learning_name = self.learning_object_name[data['question_num']-1][data['sub_question_num']-1]
 		return {
@@ -275,8 +279,7 @@ class LinkBlock(BasePathBlock):
 			context = {}
 		#Define variable to be used in HTML Template
 		context.update({
-			'lo_link' : self.current_lo_links[0],
-			'lo_name' : self.current_lo_names[0]
+			'lo_link' : self.current_lo_links[0]
 		})
 		html = Template(
 			self.resource_string("public/html/link.html")).render(Context(context)
@@ -293,6 +296,13 @@ class LinkBlock(BasePathBlock):
 	"""
 	END OF STUDENT VIEW SECTION
 	"""
+	@XBlock.json_handler
+	def clear_data(self, data, suffix=''):
+		self.current_lo_links = [{'link':'','name':''}]
+		return {
+			'result' : 'success',
+
+		} 
 
 	@staticmethod
 	def workbench_scenarios():

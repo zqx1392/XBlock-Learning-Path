@@ -2,6 +2,11 @@
 
 #linker-button {
 	float: right;
+	text-align: right;
+}
+#clear-history {
+	float: right;
+	text-align: right;
 }
 .hidden {
     display: none;

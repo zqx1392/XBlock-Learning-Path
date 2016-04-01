@@ -226,26 +226,7 @@ function QuestionBlock(runtime, element) {
 		    });
 		}	
 	};
-	/*
-	// request Learning Object-related data from server
-	var getLOLink = function(question_number){
-		var qn = {}
-		var datas={};
-		qn['question_num'] = question_number;
-		$.ajax({
-            type: "POST",
-            url: LOLinkUrl,
-            data: JSON.stringify(qn),
-            success: function (data) {
-				//alert(data.lo_link);
-				showLOLinkPopup(question_number,data);
-            },
-	   		error: function (textStatus, errorThrown) {
 
-            }
-        });
-	}
-	*/
 
  
 	
